@@ -1,0 +1,10 @@
+.inspection/
+node_modules/
+.env
+.env.*
+*.log
+*.png
+*.jpg
+*.jpeg
+*.mp4
+AGENTS.md
