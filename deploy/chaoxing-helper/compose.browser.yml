@@ -1,0 +1,95 @@
+services:
+  chaoxing-helper:
+    environment:
+      AIGC_PLATFORM_CONFIG: /data/account/platform.json
+      AIGC_BROWSER_ON_DEMAND: "1"
+    volumes:
+      - ./data:/data:z
+    networks: [browser-control]
+  chromium:
+    build:
+      context: .
+      dockerfile: Dockerfile.browser
+    image: chaoxing-browser:headless-local
+    pull_policy: never
+    container_name: chaoxing-chromium
+    profiles: [worker]
+    restart: unless-stopped
+    user: "65532:65532"
+    entrypoint: [/usr/bin/chromium]
+    command:
+      - --headless
+      - --no-sandbox
+      - --password-store=basic
+      - --user-data-dir=/config/chaoxing-profile
+      - --remote-debugging-port=9222
+      - --restore-last-session
+      - --no-first-run
+      - --no-default-browser-check
+      - --disable-gpu
+    environment:
+      TZ: Asia/Shanghai
+      LC_ALL: zh_CN.UTF-8
+    volumes:
+      - ./browser-state:/config:z
+      - ./data/uploads:/uploads:ro,z
+    networks:
+      browser-control:
+        aliases: [chromium-control]
+      browser-egress: {}
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs: ["/tmp:rw,nosuid,size=268435456,mode=1777"]
+    shm_size: 1gb
+    mem_limit: 2g
+    cpus: 2
+  cdp-bridge:
+    image: chaoxing-helper:local
+    pull_policy: never
+    container_name: chaoxing-cdp-bridge
+    profiles: [worker]
+    restart: unless-stopped
+    init: true
+    command: [--cdp-bridge]
+    network_mode: service:chromium
+    depends_on:
+      chromium:
+        condition: service_started
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 64m
+    healthcheck:
+      test: [CMD, /aigc, --cdp-healthcheck]
+      interval: 30s
+      timeout: 5s
+      retries: 6
+      start_period: 90s
+  chromium-login:
+    image: lscr.io/linuxserver/chromium@sha256:ab3cb0bfa2862e19dbfde4466b8c5f138e5acd946ba8ccc12a07fbb2d7da45bb
+    container_name: chaoxing-chromium-login
+    profiles: [login]
+    restart: "no"
+    environment:
+      PUID: "65532"
+      PGID: "65532"
+      TZ: Asia/Shanghai
+      LC_ALL: zh_CN.UTF-8
+      UMASK: "0077"
+      CHROME_CLI: >-
+        --user-data-dir=/config/chaoxing-profile
+        --remote-debugging-port=9222
+        --restore-last-session
+    volumes:
+      - ./browser-state:/config:z
+      - ./data/uploads:/uploads:ro,z
+    ports: ["127.0.0.1:43001:3001"]
+    networks: [browser-control, browser-egress]
+    shm_size: 1gb
+    mem_limit: 2g
+    cpus: 2
+networks:
+  browser-control:
+    internal: true
+  browser-egress: {}

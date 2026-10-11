@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>使用与访问记录 · 学习通工具</title><link rel="stylesheet" href="style.css"><script src="records.js" defer></script></head>
+<body>
+<header><a class="brand" href="./">学习通工具<span>ChaoXingHelper</span></a><a href="./">返回检测 ↗</a></header>
+<main><section class="intro"><span class="eyebrow">内部管理</span><h1>使用与访问记录</h1><p>外部按设备证书名称识别，内网记录来源 IP。访问页保留最近 10000 条页面访问、提交、报告下载及错误记录。</p></section>
+<nav class="records-pages"><button id="show-jobs">检测记录</button><button id="show-access">访问记录</button></nav>
+<p id="records-status" role="status">正在读取记录…</p>
+<div class="records-scroll"><table class="records-table"><thead id="records-head"><tr><th>提交时间</th><th>使用者 / IP</th><th>文档</th><th>状态</th><th>结果</th><th>报告</th></tr></thead><tbody id="records-body"></tbody></table></div>
+<nav class="records-pages"><button id="previous" disabled>上一页</button><span id="page"></span><button id="next" disabled>下一页</button></nav>
+</main><footer>学习通工具 <span>检测记录仅内部可见</span></footer>
+</body></html>

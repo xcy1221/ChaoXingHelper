@@ -1,5 +1,7 @@
 .inspection/
 node_modules/
+__pycache__/
+*.pyc
 .env
 .env.*
 *.log
@@ -8,3 +10,12 @@ node_modules/
 *.jpeg
 *.mp4
 AGENTS.md
+
+services/aigc/data/
+services/aigc/aigc
+services/aigc/*.exe
+
+deploy/chaoxing-helper/data/
+deploy/chaoxing-helper/browser-state/
+deploy/chaoxing-helper/backups/
+deploy/chaoxing-helper/source/

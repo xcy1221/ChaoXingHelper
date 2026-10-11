@@ -1,0 +1,6 @@
+ARG BROWSER_IMAGE=lscr.io/linuxserver/chromium@sha256:ab3cb0bfa2862e19dbfde4466b8c5f138e5acd946ba8ccc12a07fbb2d7da45bb
+FROM ${BROWSER_IMAGE}
+USER root
+RUN groupmod -g 65532 abc && usermod -u 65532 -g 65532 abc
+USER 65532:65532
+ENTRYPOINT ["/usr/bin/chromium"]

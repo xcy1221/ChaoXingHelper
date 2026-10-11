@@ -1,0 +1,21 @@
+[Unit]
+Description=ChaoXing browser on-demand controller
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /home/docker/services/chaoxing-helper/browser-manager.py
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/home/docker/services/chaoxing-helper/data /home/docker/services/chaoxing-helper/browser-state /run
+MemoryMax=64M
+CPUQuota=5%
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target

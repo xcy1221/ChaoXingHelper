@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Home Server · 服务器面板</title><link rel="stylesheet" href="panel.css"><script src="panel.js" defer></script></head>
+<body>
+<header><a href="./">HOME SERVER</a><span>192.168.1.71 · 局域网</span></header>
+<main><div class="intro"><span class="eyebrow">工作台</span><h1>服务器面板</h1><p>从这里进入工具、查看监控和查阅维护说明。</p></div>
+<section class="tools" aria-label="服务入口">
+<a class="tool featured" href="/chaoxing/"><div class="symbol">文</div><span class="tag" id="aigc-status">检查连接…</span><h2>AIGC 文档检测</h2><p>上传 Word，查看学习通检测进度与报告。</p><span class="arrow">打开工具 ↗</span></a>
+<a class="tool" href="/"><div class="symbol">AI</div><h2>OpenClaw</h2><p>进入现有 AI 工作入口。</p><span class="arrow">打开服务 ↗</span></a>
+<a class="tool" id="beszel" href="http://192.168.1.71:8090/"><div class="symbol">↗</div><h2>服务器监控</h2><p>通过 Beszel 查看资源与运行状态。</p><span class="arrow">查看监控 ↗</span></a>
+<a class="tool" id="mihomo" href="http://192.168.1.71:8080/"><div class="symbol">⇄</div><h2>网络代理</h2><p>进入现有 MetaCubeXD 面板。</p><span class="arrow">打开面板 ↗</span></a>
+</section>
+<section class="docs"><h2>维护资料</h2><nav><a href="README.md">说明首页</a><a href="services.md">服务清单</a><a href="operations.md">操作约定</a><a href="network.md">网络</a><a href="storage.md">存储</a><a href="docker.md">Docker</a><a href="mysql.md">MySQL</a></nav><p>服务器操作前请阅读说明首页与操作约定。</p></section>
+</main><footer>Home Server <span>工具入口与维护资料</span></footer>
+</body></html>

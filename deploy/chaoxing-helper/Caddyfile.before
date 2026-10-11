@@ -1,0 +1,17 @@
+{
+    default_sni 192.168.1.71
+}
+
+https://192.168.1.71 {
+    tls internal
+
+    redir /server-readme /server-readme/ 308
+
+    handle_path /server-readme/* {
+        reverse_proxy server-readme:8080
+    }
+
+    handle {
+        reverse_proxy openclaw-gateway:18789
+    }
+}

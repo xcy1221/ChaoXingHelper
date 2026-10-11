@@ -1,0 +1,15 @@
+{
+  "cdpURL": "http://chromium-control:9223",
+  "studentURL": "请填入当前有效的学生作答完整地址",
+  "reviewURL": "请填入教师批阅完整地址",
+  "uploadDir": "/uploads",
+  "cpi": "483561186",
+  "courseId": "264686762",
+  "classId": "148965852",
+  "workId": "55636832",
+  "answerId": "55632067",
+  "questionId": "215276021",
+  "stemId": "141421081",
+  "studentNumber": "请填入该答卷学生学号",
+  "enableAutomation": false
+}

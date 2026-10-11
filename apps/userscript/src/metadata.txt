@@ -1,0 +1,16 @@
+// ==UserScript==
+// @name         学习通助手
+// @namespace    local.chaoxing.helper
+// @version      0.4.1
+// @description  视频失焦保护与顺序连播；作业编辑器允许粘贴文本。
+// @homepageURL  https://github.com/xcy1221/ChaoXingHelper
+// @match        https://*.chaoxing.com/mycourse/studentstudy*
+// @match        https://*.chaoxing.com/mooc-ans/mycourse/studentstudy*
+// @match        https://*.chaoxing.com/mooc-ans/knowledge/cards*
+// @match        https://*.chaoxing.com/ananas/modules/video/*
+// @match        https://mooc1-api.chaoxing.com/mooc-ans/mooc2/work/dowork*
+// @match        https://mooc1.chaoxing.com/mooc-ans/mooc2/work/dowork*
+// @run-at       document-start
+// @grant        none
+// @sandbox      raw
+// ==/UserScript==

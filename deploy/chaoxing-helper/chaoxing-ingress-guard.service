@@ -1,0 +1,12 @@
+[Unit]
+Description=Allow only AIGC for non-LAN ingress
+After=firewalld.service
+Before=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/nft -f /etc/nftables/chaoxing-external.nft
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

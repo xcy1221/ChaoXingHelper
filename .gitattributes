@@ -1,0 +1,8 @@
+*.sh text eol=lf
+*.go text eol=lf
+go.mod text eol=lf
+go.sum text eol=lf
+Dockerfile text eol=lf
+deploy/**/Caddyfile* text eol=lf
+deploy/**/*.conf text eol=lf
+deploy/**/*.yml text eol=lf

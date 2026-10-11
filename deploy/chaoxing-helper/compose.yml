@@ -1,0 +1,28 @@
+services:
+  chaoxing-helper:
+    build:
+      context: ./source/services/aigc
+    image: chaoxing-helper:local
+    container_name: chaoxing-helper
+    restart: unless-stopped
+    init: true
+    environment:
+      AIGC_LISTEN: 0.0.0.0:8080
+      AIGC_DATA_DIR: /data
+    volumes:
+      - ./data:/data:Z
+    networks:
+      - caddy-proxy
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 256m
+    cpus: 1
+    healthcheck:
+      test: [CMD, /aigc, --healthcheck]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+networks:
+  caddy-proxy:
+    external: true

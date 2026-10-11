@@ -1,0 +1,4 @@
+data
+*.exe
+aigc
+*_test.go

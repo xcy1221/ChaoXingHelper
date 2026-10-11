@@ -1,0 +1,10 @@
+{
+  "name": "chaoxing-helper",
+  "version": "0.4.1",
+  "private": true,
+  "scripts": {
+    "build:userscript": "node scripts/build-userscript.cjs",
+    "test": "npm run build:userscript && node --check chaoxing-helper.user.js && node tests/userscript/smoke.cjs && node tests/userscript/multi-video.cjs && node tests/userscript/homework-paste.cjs",
+    "test:platform": "node services/aigc/platform/adapter.test.cjs"
+  }
+}

@@ -1,0 +1,7 @@
+FROM scratch
+COPY ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+COPY aigc /aigc
+USER 65532:65532
+ENV AIGC_LISTEN=0.0.0.0:8080 AIGC_DATA_DIR=/data
+EXPOSE 8080
+ENTRYPOINT ["/aigc"]

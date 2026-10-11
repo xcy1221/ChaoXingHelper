@@ -1,0 +1,26 @@
+destroy table inet chaoxing_external_guard
+table inet chaoxing_external_guard {
+    chain input {
+        type filter hook input priority -10; policy accept;
+        ct state established,related accept
+        iifname "lo" accept
+        iifname "br-*" return
+        iifname "veth*" return
+        iifname "docker*" return
+        ip saddr 192.168.1.0/24 accept
+        meta l4proto ipv6-icmp accept
+        ip6 saddr fe80::/10 udp sport 547 udp dport 546 accept
+        tcp dport 18443 accept
+        counter drop
+    }
+    chain forward {
+        type filter hook forward priority -10; policy accept;
+        ct state established,related accept
+        iifname "br-*" return
+        iifname "veth*" return
+        iifname "docker*" return
+        ip saddr 192.168.1.0/24 accept
+        ip daddr 172.20.0.3 tcp dport 18443 accept
+        counter drop
+    }
+}

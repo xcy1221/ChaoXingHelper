@@ -1,0 +1,24 @@
+{
+    default_sni 192.168.1.71
+}
+
+https://192.168.1.71 {
+    tls internal
+
+    redir /server-readme /server-readme/ 308
+    redir /chaoxing /chaoxing/ 308
+
+    handle_path /server-readme/* {
+        reverse_proxy server-readme:8080
+    }
+
+    handle_path /chaoxing/* {
+        @outside not remote_ip 192.168.1.0/24 127.0.0.1 ::1
+        respond @outside "AIGC service is available on the local network only." 403
+        reverse_proxy chaoxing-helper:8080
+    }
+
+    handle {
+        reverse_proxy openclaw-gateway:18789
+    }
+}

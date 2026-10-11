@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AIGC 检测 · 学习通工具</title>
+<link rel="stylesheet" href="style.css"><script src="app.js" defer></script>
+</head>
+<body>
+<header><a class="brand" href="./">学习通工具<span>ChaoXingHelper</span></a><nav><a id="records-link" href="records.html" hidden>检测记录 ↗</a> <a id="panel-link" href="/server-readme/panel.html" hidden>服务器面板 ↗</a></nav></header>
+<main>
+<section class="intro"><span class="eyebrow">文档检测</span><h1>上传一份文档，<br>查看 AIGC 检测结果。</h1><p>通过配置好的学习通课程完成提交与检测，结果保存在本次任务中。</p></section>
+<section class="workspace">
+<form id="upload-form" class="card">
+<div class="heading"><h2>选择文档</h2><span class="badge">Word · .docx</span></div>
+<label class="dropzone" id="dropzone" for="file">
+<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M14 5h14l9 9v29H14zM28 5v10h9M20 25h11M20 31h11M20 37h7" /></svg>
+<strong id="file-name">点击选择，或拖入 Word 文档</strong><span>支持 .docx，最大 10 MB</span>
+<input id="file" type="file" accept=".docx" aria-label="选择 Word 文档">
+</label>
+<p class="connection" id="connection" role="status">正在连接检测服务…</p>
+<button type="submit" id="submit" disabled>提交检测 <span aria-hidden="true">→</span></button>
+<p class="footnote">关闭页面后，可在同一浏览器会话中继续查看本次任务。</p>
+</form>
+<section class="card result" aria-labelledby="result-title">
+<div class="heading"><h2 id="result-title">检测进度</h2><span id="status" class="badge">尚未提交</span></div>
+<ol class="steps"><li data-step="0">排队</li><li data-step="1">提交作业</li><li data-step="2">检测</li><li data-step="3">结果</li></ol>
+<div class="result-body" aria-live="polite"><p id="message">提交文档后，可在这里查看处理进度。</p><pre id="summary" hidden></pre><a id="report" class="report" hidden>下载检测报告 ↓</a></div>
+</section>
+</section>
+<p class="note">文档与报告由服务器保存。检测结果以学习通提供的报告为准。</p>
+</main>
+<footer>学习通工具 <span>视频辅助 · 作业粘贴 · 文档检测</span></footer>
+</body>
+</html>
