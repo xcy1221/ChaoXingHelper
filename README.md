@@ -51,3 +51,8 @@ go run .
 仓库：https://github.com/xcy1221/ChaoXingHelper
 
 浏览器资源策略见 [按需运行](docs/browser-on-demand.md)：移除分钟级页面轮询，任务时启动无头浏览器，空闲后停止；桌面仅用于管理员登录。
+
+## 版本与维护状态
+
+- 当前项目版本统一索引见 [VERSION](VERSION)，与 `package.json` 保持一致；沿用现有构建和发布流程。
+- 是否仍在维护以 [STATUS.md](STATUS.md) 的 `maintenance_status` 为准；维护结论变化时同步该文件及本节。
