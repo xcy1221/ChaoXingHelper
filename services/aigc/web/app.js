@@ -48,7 +48,8 @@ async function poll(id) {
 async function health() {
   try {
     const data = await api('api/health'); ready = data.ready && !data.paused;
-    $('records-link').hidden = $('panel-link').hidden = !data.canViewRecords;
+    $('records-link').hidden = !data.canViewRecords;
+    window.dispatchEvent(new CustomEvent('aigc-internal-context', { detail: data.canViewRecords }));
     $('connection').textContent = data.paused ? '检测队列暂停，管理员正在核对上一份提交。' : data.ready ? ({ sleeping: '服务待命，提交后自动启动检测浏览器', starting: '正在启动检测浏览器' }[data.browserState] || '检测服务已连接') : '检测连接尚未就绪，请等待管理员接入学习通。';
     $('connection').classList.toggle('error', !ready);
   } catch { ready = false; $('connection').textContent = '暂时无法连接服务，请稍后重试。'; $('connection').classList.add('error'); }

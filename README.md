@@ -29,6 +29,10 @@ go run .
 
 本地地址为 http://127.0.0.1:8080/。可用 AIGC_LISTEN、AIGC_DATA_DIR 配置监听与数据目录。未配置或未启用平台执行器时 ready=false。使用 Go/chromedp 控制已登录的专用浏览器；配置与实测状态见 [作业检测适配](docs/platform-workflow.md)。本地模拟测试不代表完整平台验收。
 
+## Server Panel 集成
+
+内网检测与记录页面遵循 [Server Panel 规范](https://192.168.1.71/server-readme/README.md)，统一顶部栏为 `HOMESERVER · AIGC 文档检测　←返回server panel　外观与排版`。页面专属布局独立保存，外部证书入口不显示内网导航；详见 [界面规范](docs/server-panel.md)。
+
 ## 仓库与部署
 
 - apps/userscript/：油猴模块；scripts/ 和 tests/userscript/：构建与回归。

@@ -45,3 +45,5 @@ $('next').addEventListener('click', () => { page++; load(); });
 $('show-jobs').addEventListener('click', () => { mode = 'jobs'; page = 1; load(); });
 $('show-access').addEventListener('click', () => { mode = 'access'; page = 1; load(); });
 load();
+
+fetch('api/health', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(data => window.dispatchEvent(new CustomEvent('aigc-internal-context', { detail: data?.canViewRecords === true }))).catch(() => {});

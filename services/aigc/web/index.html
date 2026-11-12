@@ -3,12 +3,18 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AIGC 检测 · 学习通工具</title>
-<link rel="stylesheet" href="style.css"><script src="app.js" defer></script>
+<link rel="stylesheet" href="style.css?v=20261112-header"><script src="appearance.js?v=20261112-header" defer></script><script src="app.js?v=20261112-header" defer></script>
 </head>
 <body>
-<header><a class="brand" href="./">学习通工具<span>ChaoXingHelper</span></a><nav><a id="records-link" href="records.html" hidden>检测记录 ↗</a> <a id="panel-link" href="/server-readme/panel.html" hidden>服务器面板 ↗</a></nav></header>
+<header id="aigc-server-header" class="server-panel-header" aria-label="Server Panel 通用顶部栏" hidden><a class="server-panel-brand" href="/server-readme/" target="_top"><span>HOMESERVER ·</span><strong>AIGC 文档检测</strong></a><a class="server-panel-return" href="/server-readme/" target="_top">←返回server panel</a><button id="aigc-appearance-trigger" class="appearance-trigger" type="button" aria-haspopup="dialog" aria-controls="aigc-appearance" aria-expanded="false"><span aria-hidden="true">◐</span>外观与排版</button></header>
+<dialog id="aigc-appearance" aria-labelledby="aigc-appearance-title"><div class="aigc-settings-heading"><h2 id="aigc-appearance-title">外观与排版</h2><button id="aigc-appearance-close" type="button" aria-label="关闭外观与排版">×</button></div><p>调整 AIGC 检测与记录页面的显示方式，设置保存在当前浏览器。</p><form id="aigc-appearance-form">
+<fieldset><legend>界面明暗</legend><div class="aigc-options"><label><input type="radio" name="theme" value="light">浅色</label><label><input type="radio" name="theme" value="dark">深色</label></div></fieldset>
+<fieldset><legend>界面色调</legend><div class="aigc-options"><label><input type="radio" name="tone" value="green">淡绿色</label><label><input type="radio" name="tone" value="blue">淡蓝色</label><label><input type="radio" name="tone" value="red">淡红色</label><label><input type="radio" name="tone" value="pink">淡粉色</label><label><input type="radio" name="tone" value="purple">淡紫色</label></div></fieldset>
+<div class="aigc-layout-options"><label>内容宽度<select name="width" aria-label="内容宽度"><option value="standard">标准</option><option value="wide">宽屏</option><option value="full">铺满</option></select></label><label>内容密度<select name="density" aria-label="内容密度"><option value="comfortable">舒适</option><option value="compact">紧凑</option></select></label><label>检测区排版<select name="columns" aria-label="检测区排版"><option value="split">双列</option><option value="stack">单列</option></select></label></div><p>检测区排版用于上传与进度卡片，窄屏自动单列；记录页共用宽度与密度。</p><button id="aigc-layout-reset" type="button">恢复默认排版</button><p id="aigc-layout-status" role="status"></p></form></dialog>
+<header id="aigc-external-header"><a class="brand" href="./">学习通工具<span>ChaoXingHelper</span></a></header>
 <main>
 <section class="intro"><span class="eyebrow">文档检测</span><h1>上传一份文档，<br>查看 AIGC 检测结果。</h1><p>通过配置好的学习通课程完成提交与检测，结果保存在本次任务中。</p></section>
+<nav class="internal-links"><a id="records-link" href="records.html" hidden>检测记录 ↗</a></nav>
 <section class="workspace">
 <form id="upload-form" class="card">
 <div class="heading"><h2>选择文档</h2><span class="badge">Word · .docx</span></div>
