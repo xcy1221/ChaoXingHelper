@@ -26,3 +26,15 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 :root[data-aigc-internal="true"][data-layout-page] .records-table :is(th,td){padding:calc(16px * var(--page-density))}
 :root[data-aigc-internal="true"][data-layout-inset-x] main{padding-inline:var(--page-inset-x)}
 :root[data-aigc-internal="true"][data-layout-inset-y] main{padding-block:var(--page-inset-y)}
+/* Layout controls use external CSS to preserve the existing CSP. */
+.sp-layout{display:grid;gap:18px;margin:20px 0;color:var(--text);font:12px/1.6 system-ui,sans-serif}
+        .sp-layout *{box-sizing:border-box}.sp-layout .sp-layout-label{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:6px}
+        .sp-layout .sp-layout-label label{display:flex;flex-direction:row;align-items:center;gap:5px;margin:0;font-size:11px;color:var(--muted);white-space:nowrap}
+        .sp-layout small,.sp-layout p{color:var(--muted);font-size:11px}.sp-layout p{margin:0;line-height:1.7}
+        .sp-layout .sp-layout-inputs{display:grid;grid-template-columns:minmax(0,1fr) 68px;gap:12px;align-items:center}
+        .sp-layout input[type=range]{width:100%;min-width:0;padding:0;margin:0;accent-color:var(--accent);height:24px;border:0;background:transparent}
+        .sp-layout input[type=checkbox]{width:14px;height:14px;padding:0;margin:0;accent-color:var(--accent)}
+        .sp-layout input[type=number],.sp-layout select{width:100%;min-width:0;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--input,var(--surface,var(--panel)));color:var(--text);font:inherit}
+        .sp-layout input:disabled{opacity:.4}.sp-layout input:focus-visible,.sp-layout select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+        .sp-layout .sp-layout-presets{display:flex;gap:7px}.sp-layout .sp-layout-presets button{font:inherit;min-height:30px;padding:5px 10px;border:1px solid var(--line);border-radius:6px;color:var(--text);background:var(--surface,var(--panel))}
+        .sp-layout [role=status]:empty{display:none}

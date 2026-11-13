@@ -72,19 +72,7 @@
     function mount(element) {
       host = element;
       host.classList.add('sp-layout');
-      host.innerHTML = `<style>
-        .sp-layout{display:grid;gap:18px;margin:20px 0;color:var(--text);font:12px/1.6 system-ui,sans-serif}
-        .sp-layout *{box-sizing:border-box}.sp-layout .sp-layout-label{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:6px}
-        .sp-layout .sp-layout-label label{display:flex;flex-direction:row;align-items:center;gap:5px;margin:0;font-size:11px;color:var(--muted);white-space:nowrap}
-        .sp-layout small,.sp-layout p{color:var(--muted);font-size:11px}.sp-layout p{margin:0;line-height:1.7}
-        .sp-layout .sp-layout-inputs{display:grid;grid-template-columns:minmax(0,1fr) 68px;gap:12px;align-items:center}
-        .sp-layout input[type=range]{width:100%;min-width:0;padding:0;margin:0;accent-color:var(--accent);height:24px;border:0;background:transparent}
-        .sp-layout input[type=checkbox]{width:14px;height:14px;padding:0;margin:0;accent-color:var(--accent)}
-        .sp-layout input[type=number],.sp-layout select{width:100%;min-width:0;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--input,var(--surface,var(--panel)));color:var(--text);font:inherit}
-        .sp-layout input:disabled{opacity:.4}.sp-layout input:focus-visible,.sp-layout select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-        .sp-layout .sp-layout-presets{display:flex;gap:7px}.sp-layout .sp-layout-presets button{font:inherit;min-height:30px;padding:5px 10px;border:1px solid var(--line);border-radius:6px;color:var(--text);background:var(--surface,var(--panel))}
-        .sp-layout [role=status]:empty{display:none}
-      </style><p>本页布局独立保存，调整不会影响其他页面。</p>
+      host.innerHTML = `<p>本页布局独立保存，调整不会影响其他页面。</p>
       ${options.columns ? `<div><div class="sp-layout-label"><span>卡片列数</span></div><select data-columns aria-label="卡片列数"><option value="default">页面默认</option><option value="auto">自动适应</option>${Array.from({ length: options.columns }, (_, i) => `<option value="${i + 1}">${i + 1} 列</option>`).join('')}</select></div>` : ''}
       ${row('insetX', '左右页边距', 0, 20, '%', true)}${row('insetY', '上下页边距', 0, 120, 'px', true)}
       ${row('density', '内容密度', 60, 150, '%', false)}<div class="sp-layout-presets"><button type="button" data-density="75">紧凑</button><button type="button" data-density="100">标准</button><button type="button" data-density="125">宽松</button></div>
