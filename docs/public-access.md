@@ -3,6 +3,8 @@
 外部入口：https://221.216.94.213:18443/ 。仅使用 HTTPS 设备证书认证，不需要账号密码。路由器只映射 TCP18443。
 内部入口：https://192.168.1.71/chaoxing/；使用与访问记录：https://192.168.1.71/chaoxing/records.html，仅局域网可读。
 
+网页由统一 Nginx 独立托管，Go 提供 API。页面请求经服务端审计，不依赖浏览器脚本；前端发布和回退不改变设备认证、用户范围或记录权限，见 [前后端部署](frontend-deployment.md)。
+
 设备证书默认有效期90天，Windows 私钥在使用者电脑生成且不可导出。设备名称用于记录归属；外部只能读取该设备的任务与报告。
 
 ## 接入使用者
@@ -46,5 +48,5 @@ python scripts/aigc-access.py revoke alice
 ## 服务器维护
 
 `/home/docker/services/caddy/public-access.py` 管理签发、撤销和配置；私有CA位于 `aigc-access/private/`，公开设备白名单位于 `aigc-access/public/clients/*.pem`。
-运行配置为 `config/managed.json`，修改生成脚本后执行 `render --reload`。Go的网关令牌与有效设备表不公开。IPv4/IPv6非LAN入站及Docker转发限制继续只允许AIGC18443。
+运行配置为 `config/managed.json`；现有实例由 serverctl 管理，路由重新生成使用 `render --config-only` 并先暂存验证，再通过发布流程切换，不改账号与证书。Go的网关令牌与有效设备表不公开。IPv4/IPv6非LAN入站及Docker转发限制继续只允许AIGC18443。
 维护前保留配置与数据库恢复材料，修改后更新serverctl基线；私钥、浏览器Cookie、文档与报告不入Git。

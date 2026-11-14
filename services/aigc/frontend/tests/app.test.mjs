@@ -24,7 +24,7 @@ before(async () => {
     let file;
     if (url.pathname.startsWith('/legacy-external/')) file=resolve(legacy,url.pathname.slice('/legacy-external/'.length)||'index.html');
     else if (url.pathname.startsWith('/legacy/')) file=resolve(legacy,url.pathname.slice('/legacy/'.length)||'index.html');
-    else if (url.pathname.startsWith('/_web/aigc/dev/')) file=resolve(root,'dist',url.pathname.slice('/_web/aigc/dev/'.length));
+    else if (/^\/_web\/aigc\/[^/]+\//.test(url.pathname)) file=resolve(root,'dist',url.pathname.replace(/^\/_web\/aigc\/[^/]+\//,''));
     else file=resolve(root,'dist',url.pathname.endsWith('records.html')?'records.html':'index.html');
     try { response.setHeader('Content-Type',({'.js':'text/javascript','.css':'text/css','.html':'text/html'})[extname(file)]||'application/octet-stream'); response.setHeader('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'"); response.end(await readFile(file)); }
     catch { response.statusCode=404; response.end(); }

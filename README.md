@@ -2,6 +2,8 @@
 
 学习通工具。油猴 v0.4.1 提供视频辅助与作业文本粘贴。AIGC、专用浏览器和服务器面板已部署，Word 提交到报告下载已实测。[内网检测](https://192.168.1.71/chaoxing/)与[内部记录](https://192.168.1.71/chaoxing/records.html)无需登录；[外部入口](https://221.216.94.213:18443/)仅需设备证书，无需账号密码，接入与撤销见[说明](docs/public-access.md)。
 
+2026-11-14：AIGC Vue 前端 `20261114-vue1` 与独立 Go API 已上线，旧页面回滚、设备权限、无脚本访问审计及数据保留验收通过；见 [部署记录](docs/deployments.md)。
+
 ## 油猴脚本
 
 在 Tampermonkey 中安装或覆盖根目录的 chaoxing-helper.user.js。源码按模块维护，单文件是浏览器安装所需的构建产物。
