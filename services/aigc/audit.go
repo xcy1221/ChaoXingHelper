@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"net/url"
 	"path"
 	"strconv"
 	"strings"
@@ -37,19 +38,45 @@ func (a *app) audit(next http.Handler) http.Handler {
 			code = http.StatusOK
 		}
 		p := path.Clean(r.URL.Path)
+		if code < 400 && p == "/api/page-view" {
+			return // The handler records the original static page exactly once.
+		}
 		if code < 400 && r.Method == http.MethodGet && p != "/" && p != "/index.html" && !strings.HasSuffix(p, "/report") {
 			return
 		}
-		who := identity(r)
-		if len(p) > 512 {
-			p = p[:512]
-		}
-		_, err := a.store.db.Exec(`INSERT INTO access_events(created,user,ip,method,path,status) VALUES(?,?,?,?,?,?);
-DELETE FROM access_events WHERE id <= (SELECT max(id)-10000 FROM access_events);`, time.Now().Unix(), who.User, who.IP, r.Method, p, code)
-		if err != nil {
-			log.Printf("access audit failed: %v", err)
-		}
+		a.recordAccess(r, r.Method, p, code)
 	})
+}
+
+func (a *app) recordAccess(r *http.Request, method, p string, code int) {
+	who := identity(r)
+	if len(p) > 512 {
+		p = p[:512]
+	}
+	_, err := a.store.db.Exec(`INSERT INTO access_events(created,user,ip,method,path,status) VALUES(?,?,?,?,?,?);
+DELETE FROM access_events WHERE id <= (SELECT max(id)-10000 FROM access_events);`, time.Now().Unix(), who.User, who.IP, method, p, code)
+	if err != nil {
+		log.Printf("access audit failed: %v", err)
+	}
+}
+
+func (a *app) pageView(w http.ResponseWriter, r *http.Request) {
+	page, err := url.ParseRequestURI(r.Header.Get("X-Aigc-Page"))
+	if err != nil || page.Host != "" || page.Fragment != "" {
+		fail(w, http.StatusForbidden, "页面路径无效")
+		return
+	}
+	p := strings.TrimPrefix(page.Path, "/chaoxing")
+	if p != "/" && p != "/index.html" && p != "/records.html" {
+		fail(w, http.StatusForbidden, "页面路径无效")
+		return
+	}
+	if p == "/records.html" && identity(r).External {
+		fail(w, http.StatusForbidden, "页面不存在")
+		return
+	}
+	a.recordAccess(r, http.MethodGet, p, http.StatusOK)
+	w.WriteHeader(http.StatusNoContent)
 }
 
 type AccessRecord struct {

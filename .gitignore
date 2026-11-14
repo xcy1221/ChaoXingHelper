@@ -14,6 +14,7 @@ AGENTS.md
 services/aigc/data/
 services/aigc/aigc
 services/aigc/*.exe
+services/aigc/frontend/dist/
 
 deploy/chaoxing-helper/data/
 deploy/chaoxing-helper/browser-state/

@@ -39,6 +39,7 @@ type app struct {
 	uploadSlots     chan struct{}
 	gatewayToken    string
 	publicUsersFile string
+	externalWeb     bool
 }
 
 func newApp(dir string, runner Runner) (*app, error) {
@@ -56,7 +57,7 @@ func newApp(dir string, runner Runner) (*app, error) {
 		s.db.Close()
 		return nil, err
 	}
-	return &app{store: s, dir: dir, runner: runner, uploadSlots: make(chan struct{}, 2), gatewayToken: token, publicUsersFile: os.Getenv("AIGC_PUBLIC_USERS_FILE")}, nil
+	return &app{store: s, dir: dir, runner: runner, uploadSlots: make(chan struct{}, 2), gatewayToken: token, publicUsersFile: os.Getenv("AIGC_PUBLIC_USERS_FILE"), externalWeb: os.Getenv("AIGC_EXTERNAL_WEB") == "1"}, nil
 }
 func jsonReply(w http.ResponseWriter, code int, value any) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
@@ -82,6 +83,7 @@ func (a *app) routes() http.Handler {
 		jsonReply(w, 200, health)
 	})
 	mux.HandleFunc("POST /api/jobs", a.upload)
+	mux.HandleFunc("GET /api/page-view", a.pageView)
 	mux.HandleFunc("GET /api/records", a.records)
 	mux.HandleFunc("GET /api/access-records", a.accessRecords)
 	mux.HandleFunc("GET /api/jobs/{id}", func(w http.ResponseWriter, r *http.Request) {
@@ -107,7 +109,14 @@ func (a *app) routes() http.Handler {
 	})
 	mux.HandleFunc("GET /api/jobs/{id}/report", a.report)
 	web, _ := fs.Sub(webFiles, "web")
-	mux.Handle("/", http.FileServer(http.FS(web)))
+	legacyWeb := http.FileServer(http.FS(web))
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if a.externalWeb {
+			http.NotFound(w, r)
+			return
+		}
+		legacyWeb.ServeHTTP(w, r)
+	})
 	return a.access(a.audit(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 		w.Header().Set("Referrer-Policy", "same-origin")

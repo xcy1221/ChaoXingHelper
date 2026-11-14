@@ -17,7 +17,7 @@ npm test
 
 ## AIGC 网页
 
-支持 .docx 文件（最大 10 MB）、任务进度和报告下载。Go 同源提供网页与接口；SQLite 保存队列、报告关联及检测记录。内部无需登录，外部认证由 Caddy 处理，并限制任务和报告归属。检测未接入时显示“未就绪”并禁止上传。
+支持 .docx 文件（最大 10 MB）、任务进度和报告下载。Vue 前端独立构建，由统一 Nginx 托管；Go 提供 API，SQLite 保存队列、报告关联及检测记录。内部无需登录，外部认证由 Caddy 处理，并限制任务和报告归属。检测未接入时显示“未就绪”并禁止上传。
 
 专用浏览器会复用登录状态；失效时可使用服务器私有凭据自动重登，验证码仍需人工处理。配置见[账号接入](docs/account-connection.md)，排队、历史保留与异常恢复见[队列说明](docs/queue-operations.md)。
 
@@ -38,11 +38,11 @@ go run .
 ## 仓库与部署
 
 - apps/userscript/：油猴模块；scripts/ 和 tests/userscript/：构建与回归。
-- services/aigc/：Go 服务、嵌入网页和后端测试。
+- services/aigc/：Go API、可回滚的旧嵌入页、frontend/ Vue 工程和后端测试。
 - deploy/server-panel/：现有 server-readme 的面板扩展。
 - [架构](docs/architecture.md) · [部署说明](deploy/README.md)
 
-部署延续服务器既有 Nginx、Caddy 与 Docker 网络。Go 提供 AIGC 页面，Nginx 提供面板，Caddy 仅反向代理。
+部署延续既有 Nginx、Caddy 与 Docker 网络。前端构建、独立发布及 API-only 开关见 [前后端部署](docs/frontend-deployment.md)；本轮交付与上线状态见 [部署记录](docs/deployments.md)。
 
 ## 验证与数据
 

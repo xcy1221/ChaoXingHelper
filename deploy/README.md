@@ -1,6 +1,6 @@
 # 部署
 
-Go 提供 AIGC 网页；现有 server-readme Nginx 提供服务器面板；Caddy 仅反向代理。原 Markdown 仍从 /server-readme/README.md 读取。
+统一 server-readme Nginx 提供 AIGC Vue 网页与服务器面板，Go 提供 API；Caddy 保持入口安全。原 Markdown 仍从 /server-readme/README.md 读取。现有实例升级按 [前后端部署](../docs/frontend-deployment.md) 操作；本目录 install.sh 是首次安装旧合并托管的入口，不用于覆盖当前配置。
 
 部署包包含按需无头 Chromium、私有 CDP 中继、临时登录桌面与主机管理器。真实 Word 提交、检测、报告对应及按需退出已验证。内部入口保留，外部18443仅使用HTTPS设备证书认证，无需账号密码；管理与分发见[外部接入](../docs/public-access.md)。
 
