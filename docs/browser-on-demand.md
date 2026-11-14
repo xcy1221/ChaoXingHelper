@@ -4,11 +4,13 @@ Go 网页常驻；无头 Chromium 和 CDP 中继由主机 systemd 管理器按�
 
 网页后端没有 Docker socket。主机 browser-manager.py 只操作三个固定浏览器容器，读取队列和状态；它与 Go worker 使用同一排他锁，防止空闲关闭撞上提交。uncertain 仍阻塞下一任务，登录模式不接受新任务。
 
-ready=true 在此模式表示可以排队；实际账号、学生和附件在任务开始时核验。连接或身份核验失败会暂停队列，不盲目重交。
+ready=true 表示执行器已启用，上传还要求 paused=false；它不保证当前网页登录仍有效。实际账号、学生和附件在任务开始时核验。连接或身份核验失败会暂停队列，不盲目重交。
+
+2026-10-26 已部署自动重登并通过真实登录及冷启动会话复用核验：配置私有 `data/account/login.json` 后，任务开始时遇到官方登录页会尝试一次手机号密码重登并勾选“下次自动登录”，随后重新核对作业。空闲时不轮询、不定时登录；验证码和二次认证仍需管理员处理。详见[账号接入](account-connection.md)。
 
 ## 管理员登录
 
-队列须为空，执行：
+无排队或执行中任务时，执行：
 ```sh
 sudo python3 /home/docker/services/chaoxing-helper/browser-manager.py --login
 ```

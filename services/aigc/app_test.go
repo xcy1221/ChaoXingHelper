@@ -43,9 +43,11 @@ func testApp(t *testing.T, runner Runner) *app {
 func docx(text string) []byte {
 	var b bytes.Buffer
 	z := zip.NewWriter(&b)
-	for name, body := range map[string]string{"[Content_Types].xml": "<Types/>", "word/document.xml": "<document>" + text + "</document>"} {
-		f, _ := z.Create(name)
-		f.Write([]byte(body))
+	for _, entry := range []struct{ name, body string }{
+		{"[Content_Types].xml", "<Types/>"}, {"word/document.xml", "<document>" + text + "</document>"},
+	} {
+		f, _ := z.Create(entry.name)
+		f.Write([]byte(entry.body))
 	}
 	z.Close()
 	return b.Bytes()

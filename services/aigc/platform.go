@@ -210,10 +210,11 @@ func (r *ChaoXingRunner) probe(ctx context.Context) (PlatformSnapshot, error) {
 	if err != nil {
 		return PlatformSnapshot{}, errors.New("专用浏览器无法连接")
 	}
-	student, closeStudent, err := platformTab(root, r.config.StudentURL)
+	attempted := false
+	student, closeStudent, err := r.accountTab(root, r.config.StudentURL, &attempted)
 	defer closeStudent()
 	if err != nil {
-		return PlatformSnapshot{}, errors.New("学生作答页无法访问")
+		return PlatformSnapshot{}, errors.Join(errors.New("学生作答页无法访问"), err)
 	}
 	if err = waitStudent(student, r.config); err != nil {
 		return PlatformSnapshot{}, errors.New("作答编辑器未就绪")
@@ -222,10 +223,10 @@ func (r *ChaoXingRunner) probe(ctx context.Context) (PlatformSnapshot, error) {
 	if err = platformCall(student, "student", r.config, &current); err != nil {
 		return current, errors.New("学生作答页核验失败")
 	}
-	review, closeReview, err := platformTab(root, r.config.ReviewURL)
+	review, closeReview, err := r.accountTab(root, r.config.ReviewURL, &attempted)
 	defer closeReview()
 	if err != nil {
-		return current, errors.New("教师批阅页无法访问")
+		return current, errors.Join(errors.New("教师批阅页无法访问"), err)
 	}
 	var saved PlatformSnapshot
 	if err = platformCall(review, "review", r.config, &saved); err != nil {
@@ -351,7 +352,8 @@ func (r *ChaoXingRunner) Run(ctx context.Context, j Job, file string, advance fu
 	if err != nil {
 		return result, errors.New("专用浏览器无法连接")
 	}
-	review, closeReview, err := platformTab(root, r.config.ReviewURL)
+	attempted := false
+	review, closeReview, err := r.accountTab(root, r.config.ReviewURL, &attempted)
 	defer closeReview()
 	if err != nil {
 		return result, err
@@ -374,7 +376,7 @@ func (r *ChaoXingRunner) Run(ctx context.Context, j Job, file string, advance fu
 	for _, row := range before.Rows {
 		oldRows[row.ID] = true
 	}
-	student, closeStudent, err := platformTab(root, r.config.StudentURL)
+	student, closeStudent, err := r.accountTab(root, r.config.StudentURL, &attempted)
 	defer closeStudent()
 	if err != nil {
 		return result, err
