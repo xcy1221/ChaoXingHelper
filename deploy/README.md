@@ -22,6 +22,8 @@ sudo bash /path/to/ChaoXingHelper/deploy/install.sh
 
 账号登录与只读核验见 [账号接入](../docs/account-connection.md)，真实流程缺项见 [作业检测适配](../docs/platform-workflow.md)。Compose 合成与本地 Go 检查已通过，容器与内部控制通道已验证。
 
+自动重登凭据单独存放在 data/account/login.json，现有部署属主为 65532:65532、权限 0600，不放入源码、镜像或公开文档。ready=true 且 paused=false 才可上传；旧异常任务需按[队列说明](../docs/queue-operations.md)核对处置，重登或重启不会自动解除暂停。
+
 本次通过最新 server-readme 指定的 serverctl 管理通道部署。常规 Docker 构建拉取失败后，使用本机构建的 Linux Go 二进制与逐层校验的官方 Chromium 镜像完成离线安装；对应源码、摘要和备份保存在服务器私有目录。原 codex 账号及 SSH 配置未修改。
 
 按需运行见 [管理说明](../docs/browser-on-demand.md)。管理器源码或 unit 更新后需重新加载并重启 chaoxing-browser-manager.service；默认 Compose 不启动 worker/login profiles。
