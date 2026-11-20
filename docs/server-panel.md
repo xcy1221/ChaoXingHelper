@@ -1,16 +1,15 @@
 # Server Panel 界面规范
 
-内网检测与记录页面遵循 [服务器 README 的 Server Panel 规范](https://192.168.1.71/server-readme/README.md)：
+内网检测与记录页面遵循 [统一前端维护](https://192.168.1.71/server-readme/frontend.md)，直接复用公共 Vue 顶栏与外观面板。
 
 `HOMESERVER · AIGC 文档检测　←返回server panel　外观与排版`
 
 - 单一顶部栏提供顶层返回 `/server-readme/` 和本项目设置；检测记录入口放在内容区。
-- 明暗与五种色调使用共享的 `scheduletool-theme`、`scheduletool-tone`；密度及上传／进度区双列或单列布局使用 `aigc-layout-v1`。
-- 记录页共用密度，窄屏检测区自动单列；恢复默认仅重置 AIGC 布局。
+- 明暗与五种色调用公共主题，检测与记录的排版分别存于 `serverpanel-page-layout-v1:aigc` 和 `serverpanel-page-layout-v1:aigc-records`，首次读取旧键 `aigc-layout-v1`。窄屏检测区自动单列，恢复默认仅作用于当前页。
 - 依据服务端 `api/health.canViewRecords` 识别内网，外部页不显示内网导航，不改变设备证书、任务归属或记录鉴权。
 - 支持键盘、Escape 关闭与焦点返回；全部脚本和样式同源加载，保持现有 CSP。
 
-Vue 前端通过固定版本的 `@homeserver/theme`、`@homeserver/ui` 源码包复用主题与排版，保留原 DOM、CSS、页面标识和旧键回退。发布需验证检测入口、记录、外部权限与空闲队列；纯前端更新无需重启 Go。外观验证使用隔离接口和样例，不启动生产检测任务。构建与恢复见 [前后端部署](frontend-deployment.md)。
+Vue 前端固定引用 `@homeserver/theme`、`@homeserver/ui` 1.1.0。顶栏、外观和排版控件样式由公共组件维护，检测和记录的业务 CSS 留在本项目。发布验证覆盖检测入口、记录、外部权限与空闲队列。外观和上传使用隔离接口与样例。构建与恢复见 [前后端部署](frontend-deployment.md)。
 
 内网业务内容区自适应占满可用空间，移除页面限宽及宽度选项，旧 width 偏好自动忽略；不改变外部证书页的独立展示与权限。
 
@@ -20,4 +19,4 @@ Vue 前端通过固定版本的 `@homeserver/theme`、`@homeserver/ui` 源码包
 
 检测页和记录页分开保存；外部入口保持原布局。
 
-排版控件样式并入外部 `style.css`，不注入内联样式，也不更改现有 CSP。
+公共组件样式编译进同源 CSS 产物，继续遵循现有 CSP。

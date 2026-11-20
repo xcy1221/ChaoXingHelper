@@ -1,10 +1,18 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
-import Appearance from './Appearance.vue';
+import { AppearancePanel, TopBar } from '@homeserver/ui';
 import { api, labels, stages, terminal, storedJob, remember } from './api';
 import type { Job, Health } from './api';
 const records = location.pathname.endsWith('/records.html');
-const internal = ref(false), appearance = ref<InstanceType<typeof Appearance>>();
+const internal = ref(false), appearance = ref<InstanceType<typeof AppearancePanel>>();
+const appearancePage = {
+  id: records ? 'aigc-records' : 'aigc',
+  legacyKey: 'aigc-layout-v1',
+  columns: records ? 0 : 2,
+  defaultColumns: 2,
+  gap: 22,
+  cardGap: !records
+};
 const selected = ref<File | null>(null), current = ref<Job | null>(null), ready = ref(false), pending = ref(false), drag = ref(false);
 const connection = ref('正在连接检测服务…'), connectionError = ref(false), message = ref('提交文档后，可在这里查看处理进度。');
 const disabled = computed(() => !ready.value || !selected.value || pending.value || !!(current.value && !terminal.has(current.value.status)));
@@ -13,7 +21,20 @@ const abort = new AbortController();
 const mode = ref<'jobs'|'access'>('jobs'), page = ref(1), pages = ref(1), rows = ref<any[]>([]), loading = ref(false), recordsStatus = ref('正在读取记录…');
 const heads = computed(() => mode.value === 'jobs' ? ['提交时间','设备 / IP','文档','状态','结果','报告'] : ['访问时间','设备 / IP','方法','路径','HTTP 状态']);
 let recordSequence = 0;
-watch(internal, value => { if (value) document.documentElement.dataset.aigcInternal = 'true'; else delete document.documentElement.dataset.aigcInternal; });
+watch(internal, value => {
+  const root = document.documentElement;
+  if (value) root.dataset.aigcInternal = 'true';
+  else {
+    delete root.dataset.aigcInternal;
+    root.removeAttribute('data-aigc-compact');
+  }
+});
+function syncDensity() {
+  if (!internal.value) return;
+  const root = document.documentElement;
+  const density = Number.parseFloat(root.style.getPropertyValue('--page-density'));
+  root.toggleAttribute('data-aigc-compact', density <= 0.75);
+}
 async function health() {
   try {
     const data = await api<Health>('health', { signal: abort.signal }); if (!alive) return;
@@ -56,13 +77,13 @@ async function loadRecords() {
 }
 function changeMode(value: 'jobs'|'access') { mode.value = value; page.value = 1; loadRecords(); }
 function changePage(delta: number) { page.value += delta; loadRecords(); }
-onMounted(() => { alive = true; health(); if (records) loadRecords(); else { healthTimer = setInterval(health, 15000); const id = storedJob(); if (id && /^[a-f0-9]{32}$/.test(id)) { current.value = { id, status: 'queued' }; poll(id); } } });
-onUnmounted(() => { alive = false; abort.abort(); clearTimeout(pollTimer); clearInterval(healthTimer); });
+onMounted(() => { window.addEventListener('serverpanel-layout-change', syncDensity); alive = true; health(); if (records) loadRecords(); else { healthTimer = setInterval(health, 15000); const id = storedJob(); if (id && /^[a-f0-9]{32}$/.test(id)) { current.value = { id, status: 'queued' }; poll(id); } } });
+onUnmounted(() => { window.removeEventListener('serverpanel-layout-change', syncDensity); alive = false; abort.abort(); clearTimeout(pollTimer); clearInterval(healthTimer); });
 </script>
 <template>
-  <header id="aigc-server-header" class="server-panel-header" aria-label="Server Panel 通用顶部栏" :hidden="!internal"><a class="server-panel-brand" href="/server-readme/" target="_top"><span>HOMESERVER ·</span><strong>AIGC 文档检测</strong></a><a class="server-panel-return" href="/server-readme/" target="_top">←返回server panel</a><button id="aigc-appearance-trigger" class="appearance-trigger" type="button" aria-haspopup="dialog" aria-controls="aigc-appearance" aria-expanded="false" @click="appearance?.open()"><span aria-hidden="true">◐</span>外观与排版</button></header>
-  <Appearance v-if="internal" ref="appearance" :records="records" />
-  <header id="aigc-external-header" :hidden="internal"><a class="brand" href="./">学习通工具<span>ChaoXingHelper</span></a><a v-if="records" href="./">返回检测 ↗</a></header>
+  <TopBar v-if="internal" id="aigc-server-header" name="AIGC 文档检测" @appearance="appearance?.open()" />
+  <AppearancePanel v-if="internal" ref="appearance" :page="appearancePage" />
+  <header v-else id="aigc-external-header"><a class="brand" href="./">学习通工具<span>ChaoXingHelper</span></a><a v-if="records" href="./">返回检测 ↗</a></header>
   <main v-if="!records">
     <section class="intro"><span class="eyebrow">文档检测</span><h1>上传一份文档，<br>查看 AIGC 检测结果。</h1><p>通过配置好的学习通课程完成提交与检测，结果保存在本次任务中。</p></section>
     <nav class="internal-links"><a id="records-link" href="records.html" :hidden="!internal">检测记录 ↗</a></nav>

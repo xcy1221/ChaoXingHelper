@@ -1,6 +1,6 @@
 # AIGC 前后端独立部署
 
-前端源码为 `services/aigc/frontend/`，Vue 3.5.44、TypeScript、Vite，公共主题和排版固定引用 `vendor/` 的 1.0.0 包，依赖锁定于 package-lock.json。业务 CSS 与原页面一致，`aigc`、`aigc-records` 及旧偏好键保留；外部页继续使用原独立样式。
+前端源码为 `services/aigc/frontend/`，使用 Vue、TypeScript 与 Vite。对内网启用公共主题、顶栏和外观面板，从 `vendor/` 固定引用 1.1.0 并由锁文件校验。保留 `aigc`、`aigc-records` 和旧偏好回退。外部入口使用原独立品牌样式。
 
 Node 20.19+ 构建：在该目录执行 `npm ci`，设置 `WEB_ASSET_BASE=/_web/aigc/<不可变版本>/` 后执行 `npm run build`。产物为 dist/，index.html 与 records.html 独立入口。API 使用浏览器业务地址的相对路径，兼容内网 /chaoxing/ 与外网 /，不随资源版本改变。
 

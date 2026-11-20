@@ -9,8 +9,8 @@
     "test": "node --test tests/app.test.mjs"
   },
   "dependencies": {
-    "@homeserver/theme": "file:vendor/homeserver-theme-1.0.0.tgz",
-    "@homeserver/ui": "file:vendor/homeserver-ui-1.0.0.tgz",
+    "@homeserver/theme": "file:vendor/homeserver-theme-1.1.0.tgz",
+    "@homeserver/ui": "file:vendor/homeserver-ui-1.1.0.tgz",
     "vue": "3.5.44"
   },
   "devDependencies": {
