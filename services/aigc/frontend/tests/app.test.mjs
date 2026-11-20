@@ -34,38 +34,79 @@ before(async () => {
 });
 after(async()=>{await browser?.close(); await new Promise(done=>server?.close(done));});
 
-test('既有DOM、明暗五色及宽窄屏布局一致', async()=>{
-  const selectors=['#aigc-server-header','main','.intro h1','.workspace','.card','#dropzone','#submit','footer'];
-  for(const width of [1440,390]) for(const theme of ['dark','light']) for(const tone of ['green','blue','red','pink','purple']) {
-    const context=await browser.newContext({viewport:{width,height:960}});
-    await context.addInitScript(({theme,tone})=>{localStorage.setItem('scheduletool-theme',theme);localStorage.setItem('scheduletool-tone',tone);},{theme,tone});
-    const snapshots=[];
-    for(const path of ['/legacy/','/chaoxing/']) {
-      const page=await context.newPage(); const errors=[];page.on('pageerror',e=>errors.push(e.message));
-      await page.goto(origin+path);await page.waitForSelector('html[data-aigc-internal=true]');
-      await page.waitForTimeout(30);
-      snapshots.push(await page.evaluate(selectors=>selectors.map(selector=>{const e=document.querySelector(selector),r=e.getBoundingClientRect(),s=getComputedStyle(e);return {selector,x:r.x,y:r.y,width:r.width,height:r.height,font:s.fontSize,bg:s.backgroundColor,color:s.color};}),selectors));
-      if (tone==='green' && path==='/chaoxing/') { const folder=resolve(root,'../../../.inspection/web-migration');await mkdir(folder,{recursive:true});await page.screenshot({path:resolve(folder,`${width}-${theme}.png`),fullPage:true}); }
-      assert.deepEqual(errors,[]);
+async function layoutSnapshot(page, selectors, relativeToHeader = false) {
+  return page.evaluate(({ selectors, relativeToHeader }) => {
+    const offset = relativeToHeader ? document.querySelector('#aigc-server-header').getBoundingClientRect().bottom : 0;
+    return selectors.map(selector => {
+      const element = document.querySelector(selector);
+      const { x, y, width, height } = element.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      return { selector, x, y: y - offset, width, height, font: style.fontSize, bg: style.backgroundColor, color: style.color };
+    });
+  }, { selectors, relativeToHeader });
+}
+
+test('公共顶栏覆盖内网明暗五色与宽窄屏，业务区布局保留', async () => {
+  const selectors = ['main', '.intro h1', '.workspace', '.card', '#dropzone', '#submit', 'footer'];
+  for (const width of [1440, 360]) for (const theme of ['dark', 'light']) for (const tone of ['green', 'blue', 'red', 'pink', 'purple']) {
+    const context = await browser.newContext({ viewport: { width, height: 960 } });
+    await context.addInitScript(({ theme, tone }) => {
+      localStorage.setItem('scheduletool-theme', theme);
+      localStorage.setItem('scheduletool-tone', tone);
+    }, { theme, tone });
+    const snapshots = [];
+    for (const url of ['/legacy/', '/chaoxing/']) {
+      const page = await context.newPage();
+      const errors = [];
+      page.on('pageerror', error => errors.push(error.message));
+      page.on('console', message => { if (message.type() === 'error' && /content security policy/i.test(message.text())) errors.push(message.text()); });
+      await page.goto(origin + url);
+      await page.waitForSelector('html[data-aigc-internal=true]');
+      if (url === '/chaoxing/') {
+        await page.waitForSelector('html[data-layout-page=aigc]');
+        const header = page.locator('#aigc-server-header');
+        assert.equal(await header.getByRole('link', { name: '←返回server panel' }).getAttribute('target'), '_top');
+        assert.equal(await header.getByRole('button', { name: '外观与排版' }).isVisible(), true);
+        assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).colorScheme), theme);
+        assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+        if (tone === 'green') {
+          const folder = resolve(root, '../../../.inspection/web-migration');
+          await mkdir(folder, { recursive: true });
+          await page.screenshot({ path: resolve(folder, `${width}-${theme}.png`), fullPage: true });
+        }
+      }
+      const layout = await layoutSnapshot(page, selectors, true);
+      snapshots.push(layout.map(({ bg, color, ...geometry }) => geometry));
+      assert.deepEqual(errors, []);
       await page.close();
     }
-    assert.deepEqual(snapshots[1],snapshots[0],`${width}/${theme}/${tone}`);
+    assert.deepEqual(snapshots[1], snapshots[0], `${width}/${theme}/${tone}`);
     await context.close();
   }
 });
 
-test('外部独立样式及内部记录页保持原布局',async()=>{
-  for(const width of [1440,390]) for(const records of [false,true]) {
-    const context=await browser.newContext({viewport:{width,height:960}}), snapshots=[];
-    for(const path of records?['/legacy/records.html','/chaoxing/records.html']:['/legacy-external/','/external/']) {
-      const page=await context.newPage();await page.goto(origin+path);
-      if(records) await page.waitForSelector('#records-body tr');else await page.waitForSelector('#connection:text("检测服务已连接")');
-      await page.waitForTimeout(30);
-      const selectors=records?['main','.intro h1','.records-scroll','.records-table','footer']:['#aigc-external-header','main','.workspace','.card','footer'];
-      snapshots.push(await page.evaluate(selectors=>selectors.map(selector=>{const e=document.querySelector(selector),r=e.getBoundingClientRect(),s=getComputedStyle(e);return {selector,x:r.x,y:r.y,width:r.width,height:r.height,font:s.fontSize,bg:s.backgroundColor,color:s.color};}),selectors));
+test('外部独立样式及内部记录业务区布局保留', async () => {
+  for (const width of [1440, 360]) for (const records of [false, true]) {
+    const context = await browser.newContext({ viewport: { width, height: 960 } }), snapshots = [];
+    const paths = records ? ['/legacy/records.html', '/chaoxing/records.html'] : ['/legacy-external/', '/external/'];
+    const selectors = records ? ['main', '.intro h1', '.records-scroll', '.records-table', 'footer'] : ['#aigc-external-header', 'main', '.workspace', '.card', 'footer'];
+    for (const url of paths) {
+      const page = await context.newPage();
+      await page.goto(origin + url);
+      if (records) {
+        await page.waitForSelector('#records-body tr');
+        await page.waitForSelector('html[data-aigc-internal=true]');
+        if (url === '/chaoxing/records.html') await page.waitForSelector('html[data-layout-page=aigc-records]');
+      } else {
+        await page.waitForSelector('#connection:text("检测服务已连接")');
+        assert.equal(await page.getByRole('button', { name: '外观与排版' }).count(), 0);
+      }
+      const layout = await layoutSnapshot(page, selectors, records);
+      snapshots.push(records ? layout.map(({ bg, color, ...geometry }) => geometry) : layout);
       await page.close();
     }
-    assert.deepEqual(snapshots[1],snapshots[0],`${width}/records=${records}`);await context.close();
+    assert.deepEqual(snapshots[1], snapshots[0], `${width}/records=${records}`);
+    await context.close();
   }
 });
 
@@ -81,8 +122,17 @@ test('上传幂等键、轮询、报告及记录分页保留',async()=>{
   await page.goto(origin+'/chaoxing/records.html');await page.waitForSelector('#records-body tr');
   assert.match(await page.locator('#records-body').innerText(),/fixture.docx/);await page.locator('#next').click();assert.equal(await page.locator('#page').textContent(),'2 / 2');
   await page.locator('#show-access').click();await page.waitForSelector('#records-body td:nth-child(3):text("GET")');
-  await page.locator('#aigc-appearance-trigger').click();await page.locator('input[name=tone][value=purple]').check();
-  assert.equal(await page.evaluate(()=>localStorage.getItem('scheduletool-tone')),'purple');
+  const trigger = page.getByRole('button', { name: '外观与排版' });
+  const dialog = page.getByRole('dialog', { name: '外观与排版' });
+  await trigger.click();
+  await dialog.locator('input[name=tone][value=purple]').check();
+  await dialog.getByRole('button', { name: '紧凑' }).click();
+  assert.equal(await page.evaluate(() => localStorage.getItem('scheduletool-tone')), 'purple');
+  assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('serverpanel-page-layout-v1:aigc-records')).density), 75);
+  assert.equal(await page.evaluate(() => localStorage.getItem('serverpanel-page-layout-v1:aigc')), null);
+  await page.keyboard.press('Escape');
+  await dialog.waitFor({ state: 'hidden' });
+  assert.equal(await trigger.evaluate(element => element === document.activeElement), true);
   await page.goto(origin+'/external/');await page.waitForSelector('#connection:text("检测服务已连接")');
   assert.equal(await page.locator('#aigc-server-header').isVisible(),false);assert.equal(await page.locator('#records-link').isVisible(),false);
   await context.close();

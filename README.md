@@ -35,7 +35,7 @@ go run .
 
 ## Server Panel 集成
 
-内网检测与记录页面遵循 [Server Panel 规范](https://192.168.1.71/server-readme/README.md)，统一顶部栏为 `HOMESERVER · AIGC 文档检测　←返回server panel　外观与排版`。页面专属布局独立保存，外部证书入口不显示内网导航；详见 [界面规范](docs/server-panel.md)。
+内网检测与记录页面使用 Server Panel 公共 Vue 顶栏、外观面板和主题，分别保存排版偏好。外部证书入口使用独立品牌界面。见 [界面规范](docs/server-panel.md) 与 [统一前端维护](https://192.168.1.71/server-readme/frontend.md)。
 
 ## 仓库与部署
 
